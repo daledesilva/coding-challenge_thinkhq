@@ -32,7 +32,7 @@ export function Hero3d() {
   const camera = new THREE.PerspectiveCamera(30, window.innerWidth/window.innerHeight, 0.1, 5000);
 
   return (
-    <div className='w-full p-6 h-96'>
+    <div className='w-full h-96 mt-5 lg:h-[41rem] lg:mt-12'>
       {/* <Canvas> */}
       <Canvas camera={camera} shadows>
         <CameraSetup/>

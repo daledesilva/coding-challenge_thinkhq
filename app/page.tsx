@@ -1,16 +1,22 @@
 import Image from "next/image";
-import { Hero3dBlock } from "@/app/ui/hero-3d";
+import { Hero3dBlock } from "@/app/ui/content-blocks/hero-3d-block";
 import { body } from "@/app/ui/fonts";
-import { SubtitleBlock } from "./ui/content-blocks/SubtitleBlock";
-import { TitleBlock } from "./ui/content-blocks/TitleBlock";
-import { OurProcessBlock } from "./ui/content-blocks/OurProcessBlock";
+import { SubtitleBlock } from "./ui/content-blocks/subtitle-block";
+import { TitleBlock } from "./ui/content-blocks/title-block";
+import { OurProcessBlock } from "./ui/content-blocks/our-process-block";
 
 ////////
 ////////
 
 export default function Home() {
   return (
-    <main className={`${body.className} antialiased bg-white text-black py-20 relative -z-10`}>
+    // NOTE: relative and z-10 ensure lock backgrounds can be positioned and placed behind
+    <main className={`
+      ${body.className} antialiased
+      bg-white text-black
+      py-20
+      relative z-10
+    `}>
       <TitleBlock/>
       <SubtitleBlock/>
       <Hero3dBlock/>

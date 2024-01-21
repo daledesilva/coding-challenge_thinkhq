@@ -23,7 +23,7 @@
     @apply w-full max-w-7xl;
   }
   .common-content-p {
-    @apply px-[1.5rem] lg:px-[3.75rem];
+    @apply px-[1.5rem] lg:px-[3.75rem]
   }
 
 }

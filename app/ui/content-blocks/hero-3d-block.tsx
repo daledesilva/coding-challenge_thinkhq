@@ -1,11 +1,12 @@
 'use client';
 import { Canvas, useLoader, useThree } from '@react-three/fiber'
-import { CameraControls, Plane } from "@react-three/drei";
+import { CameraControls, Plane, useProgress } from "@react-three/drei";
 import { GLTFLoader } from 'three/examples/jsm/Addons.js';
 import * as THREE from 'three';
 import { degToRad } from 'three/src/math/MathUtils.js';
 import { Suspense, useEffect, useRef } from 'react';
 import { useGLTF } from '@react-three/drei';
+import { flair } from '../fonts';
 
 ////////
 ////////
@@ -17,7 +18,7 @@ export function Hero3dBlock() {
       <div className="common-content-w common-content-p h-96 lg:h-[41rem]">
         
         <div className="h-full w-full bg-[url('/scenes/island/placeholder.jpg')] bg-cover bg-center">
-          <Suspense fallback={<div>Loading 3D scene...</div>}>
+          <Suspense fallback={<InteractiveSceneLoader/>}>
             <InteractiveScene/>
           </Suspense>
         </div>
@@ -31,8 +32,6 @@ function InteractiveScene() {
   // const { scene } = useLoader(GLTFLoader, '/scenes/island/scene.gltf');
   const { scene } = useGLTF('/scenes/island/scene.glb');
 
-  const lightRef = useRef();
-
   scene.castShadow = true;
   scene.receiveShadow = true;
 
@@ -41,12 +40,10 @@ function InteractiveScene() {
       const mesh = object as THREE.Mesh;
       const material = mesh.material as THREE.MeshStandardMaterial;
       
-      if(mesh.name.indexOf('Fortress') >= 0) {
-      }
       if(mesh.name.indexOf('Sky') == -1) {
-        console.log(mesh.name);
+        // NOTE: Shadows aren't working anyway. It might be a scene size issue, but scaling it down didn't seem to fix
         mesh.castShadow = true;
-        mesh.receiveShadow = true;
+        mesh.receiveShadow = true;        
       }
 
       // Ensure all solid materials refresh their depth order before each render
@@ -60,11 +57,6 @@ function InteractiveScene() {
     }
   });
 
-  // useEffect( () => {
-  //   console.log('doing');
-    console.log('lightRef', lightRef);
-  // },[])
-
   // NOTE: Increasing the render depth could introduce artifacts. Consider if model should be scaled down instead.
   const camera = new THREE.PerspectiveCamera(40, window.innerWidth/window.innerHeight, 0.1, 5000);
 
@@ -72,18 +64,16 @@ function InteractiveScene() {
     <Canvas camera={camera} shadows>
       <CameraSetup />
 
-      {/* <ambientLight intensity={1} /> */}
       <hemisphereLight intensity={3} color="white" position={[0, 5, 0]} />
       <directionalLight
-        ref = {lightRef.current}
         position={[50, 50, 50]}
         color="white"
         intensity={2}
         castShadow
-        shadow-mapSize-height={2048}
-        shadow-mapSize-width={2048}
-        shadow-camera-near={0.5}
-        shadow-camera-far={1000}
+        // shadow-mapSize-height={1024}
+        // shadow-mapSize-width={1024}
+        // shadow-camera-near={0.5}
+        // shadow-camera-far={1000}
         visible
       />
       <mesh castShadow receiveShadow>
@@ -93,9 +83,21 @@ function InteractiveScene() {
 );
 }
 
+function InteractiveSceneLoader() {
+  const {progress} = useProgress();
+  return (
+    <div className="h-full flex justify-center content-center flex-wrap">
+      <div className="p-4 bg-[--bg-light] text-[--text-dark] w-fit h-fit">
+        <p className={`${flair.className} italic text-2xl`}>
+          Loading... {progress.toFixed(0)}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function CameraSetup() {
   const cameraRef = useRef<CameraControls>(null);
-  // const {camera} = useThree();
 
   useEffect( () => {
     const cameraPos = {x: 673, y: 130, z: -524}
@@ -116,18 +118,12 @@ function CameraSetup() {
       // Prevent panning off center
       truckSpeed = {0}
 
-      // NOTE: For first person view (Incomplete)
-      // https://drei.pmnd.rs/?path=/story/controls-firstpersoncontrols--first-person-controls-story&args=lookSpeed:0.1
 
-      // or:
+      // NOTE: For first person view (Incomplete)
       // azimuthRotateSpeed = {-0.3} // negative value to invert rotation direction
       // polarRotateSpeed = {- 0.3} // negative value to invert rotation direction
       // verticalDragToForward = {true}
       // colliderMeshes
-
-      // onChange = {() => {
-      //   console.log(camera.position);
-      // }}
     />
   </>);
 }

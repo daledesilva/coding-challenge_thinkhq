@@ -9,7 +9,7 @@ import { useEffect, useRef } from 'react';
 ////////
 ////////
 
-export function Hero3d() {
+export function Hero3dBlock() {
   const { scene } = useLoader(GLTFLoader, '/scenes/island/scene.gltf');
 
   scene.castShadow = true;
@@ -32,16 +32,22 @@ export function Hero3d() {
   const camera = new THREE.PerspectiveCamera(30, window.innerWidth/window.innerHeight, 0.1, 5000);
 
   return (
-    <Canvas camera={camera} shadows>
-      <CameraSetup/>
-      
-      <ambientLight intensity={1}/>
-      <hemisphereLight intensity={2} color="white" position={[0, 5, 0]}/>
-      <directionalLight intensity={2} color="white" position={[0, 5, -2]} castShadow/>
-      <mesh castShadow receiveShadow>
-        <primitive object={scene} castShadow receiveShadow/>
-      </mesh>
-    </Canvas>
+    <div className="center-child-content mt-5 lg:mt-12">
+      <div className="common-content-w common-content-p h-96 lg:h-[41rem]">
+        
+        <Canvas camera={camera} shadows>
+          <CameraSetup/>
+          
+          <ambientLight intensity={1}/>
+          <hemisphereLight intensity={2} color="white" position={[0, 5, 0]}/>
+          <directionalLight intensity={2} color="white" position={[0, 5, -2]} castShadow/>
+          <mesh castShadow receiveShadow>
+            <primitive object={scene} castShadow receiveShadow/>
+          </mesh>
+        </Canvas>
+
+      </div>
+    </div>
   )
 }
 

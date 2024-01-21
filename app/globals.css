@@ -7,10 +7,19 @@
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255; */
 
-  --page-sm-mx: 1.5rem;
-  --page-lg-mx: 3.75rem;
+  --page-sm-px: 1.5rem;
+  --page-lg-px: 3.75rem;
 
 }
+
+
+@layer base {
+  .content-block {
+    @apply px-[1.5rem] mt-12 lg:px-[3.75rem]
+  }
+}
+
+
 
 /* @media (prefers-color-scheme: dark) {
   :root {

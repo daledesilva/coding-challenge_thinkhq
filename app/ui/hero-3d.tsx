@@ -32,19 +32,16 @@ export function Hero3d() {
   const camera = new THREE.PerspectiveCamera(30, window.innerWidth/window.innerHeight, 0.1, 5000);
 
   return (
-    <div className='w-full h-96 mt-5 lg:h-[41rem] lg:mt-12'>
-      {/* <Canvas> */}
-      <Canvas camera={camera} shadows>
-        <CameraSetup/>
-        
-        {/* <ambientLight intensity={1}/> */}
-        <hemisphereLight intensity={1} color="white" position={[0, 5, 5]}/>
-        <directionalLight intensity={2} color="white" position={[0, 5, -2]} castShadow/>
-        <mesh castShadow receiveShadow>
-          <primitive object={scene} castShadow receiveShadow/>
-        </mesh>
-      </Canvas>
-    </div>
+    <Canvas camera={camera} shadows>
+      <CameraSetup/>
+      
+      <ambientLight intensity={1}/>
+      <hemisphereLight intensity={2} color="white" position={[0, 5, 0]}/>
+      <directionalLight intensity={2} color="white" position={[0, 5, -2]} castShadow/>
+      <mesh castShadow receiveShadow>
+        <primitive object={scene} castShadow receiveShadow/>
+      </mesh>
+    </Canvas>
   )
 }
 
@@ -52,8 +49,8 @@ function CameraSetup() {
   const cameraRef = useRef<CameraControls>(null);
 
   useEffect( () => {
-    const cameraPos = { x: 498, y: 60, z: -334 }
-    const orbitCenter = { x: 0, y: 80, z: 0 }
+    const cameraPos = { x: 498, y: 120, z: -334 }
+    const orbitCenter = { x: 0, y: 130, z: 0 }
     const animate = false;
     cameraRef.current?.setLookAt(cameraPos.x, cameraPos.y, cameraPos.z, orbitCenter.x, orbitCenter.y, orbitCenter.z, animate);
   }, [])

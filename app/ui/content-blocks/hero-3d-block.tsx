@@ -1,11 +1,11 @@
 'use client';
-import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber'
-import { CameraControls, PerspectiveCamera } from "@react-three/drei";
+import { Canvas, useLoader, useThree } from '@react-three/fiber'
+import { CameraControls, Plane } from "@react-three/drei";
 import { GLTFLoader } from 'three/examples/jsm/Addons.js';
 import * as THREE from 'three';
 import { degToRad } from 'three/src/math/MathUtils.js';
 import { Suspense, useEffect, useRef } from 'react';
-import Image from 'next/image';
+import { useGLTF } from '@react-three/drei';
 
 ////////
 ////////
@@ -17,12 +17,10 @@ export function Hero3dBlock() {
       <div className="common-content-w common-content-p h-96 lg:h-[41rem]">
         
         <div className="h-full w-full bg-[url('/scenes/island/placeholder.jpg')] bg-cover bg-center">
-          <Suspense fallback={<></>}>
+          <Suspense fallback={<div>Loading 3D scene...</div>}>
             <InteractiveScene/>
           </Suspense>
         </div>
-
-        {/* <InteractiveScenePlaceholder/> */}
 
       </div>
     </div>
@@ -30,54 +28,69 @@ export function Hero3dBlock() {
 }
 
 function InteractiveScene() {
-  const { scene } = useLoader(GLTFLoader, '/scenes/island/scene.gltf');
+  // const { scene } = useLoader(GLTFLoader, '/scenes/island/scene.gltf');
+  const { scene } = useGLTF('/scenes/island/scene.glb');
+
+  const lightRef = useRef();
 
   scene.castShadow = true;
   scene.receiveShadow = true;
 
   scene.traverse((object) => {
-    if(object.isMesh) {
-      object.castShadow = true;
-      object.receiveShadow = true;
-
-      // REVIEW: Assigning new materials to objects as their defaults have an issue with draw order
-      if(object.name.indexOf('Fortress') >= 0) {
-        var standardMaterial = new THREE.MeshStandardMaterial({map: object.material.map});
-        object.material = standardMaterial;
+    if(object instanceof THREE.Mesh && object.isMesh) {
+      const mesh = object as THREE.Mesh;
+      const material = mesh.material as THREE.MeshStandardMaterial;
+      
+      if(mesh.name.indexOf('Fortress') >= 0) {
       }
+      if(mesh.name.indexOf('Sky') == -1) {
+        console.log(mesh.name);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+      }
+
+      // Ensure all solid materials refresh their depth order before each render
+      material.depthWrite = true;
+
+      // Ensure transparent see is always rendered after everything (to prevent it becoming opaque on certain camera angles)
+      if(mesh.name == 'Sea_Sea_0') {
+        mesh.renderOrder = 1;
+      }
+      
     }
   });
+
+  // useEffect( () => {
+  //   console.log('doing');
+    console.log('lightRef', lightRef);
+  // },[])
 
   // NOTE: Increasing the render depth could introduce artifacts. Consider if model should be scaled down instead.
   const camera = new THREE.PerspectiveCamera(40, window.innerWidth/window.innerHeight, 0.1, 5000);
 
-  return <Canvas camera={camera} shadows>
-    <CameraSetup />
-
-    <ambientLight intensity={1} />
-    <hemisphereLight intensity={2} color="white" position={[0, 5, 0]} />
-    <directionalLight intensity={2} color="white" position={[0, 5, -2]} castShadow />
-    <mesh castShadow receiveShadow>
-      <primitive object={scene} castShadow receiveShadow />
-    </mesh>
-  </Canvas>;
-}
-
-function InteractiveScenePlaceholder() {
   return (
-    <div className="h-full flex justify-center content-center overflow-hidden">
-      <Image
-        src = "/scenes/island/placeholder.png"
-        alt = "A beautiful island"
-        width = {1160}
-        height = {656}
-        className = "h-full w-auto max-w-none"
-        style = {{
-          aspectRatio: 1160/656,
-        }}
+    <Canvas camera={camera} shadows>
+      <CameraSetup />
+
+      {/* <ambientLight intensity={1} /> */}
+      <hemisphereLight intensity={3} color="white" position={[0, 5, 0]} />
+      <directionalLight
+        ref = {lightRef.current}
+        position={[50, 50, 50]}
+        color="white"
+        intensity={2}
+        castShadow
+        shadow-mapSize-height={2048}
+        shadow-mapSize-width={2048}
+        shadow-camera-near={0.5}
+        shadow-camera-far={1000}
+        visible
       />
-    </div>
-  )
+      <mesh castShadow receiveShadow>
+        <primitive object={scene} />
+      </mesh>
+    </Canvas>
+);
 }
 
 function CameraSetup() {
@@ -103,7 +116,7 @@ function CameraSetup() {
       // Prevent panning off center
       truckSpeed = {0}
 
-      // For first person view
+      // NOTE: For first person view (Incomplete)
       // https://drei.pmnd.rs/?path=/story/controls-firstpersoncontrols--first-person-controls-story&args=lookSpeed:0.1
 
       // or:

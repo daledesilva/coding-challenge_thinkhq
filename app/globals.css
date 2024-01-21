@@ -3,13 +3,10 @@
 @tailwind utilities;
 
 :root {
-  /* --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255; */
-
-  /* --page-sm-px: 1.5rem;
-  --page-lg-px: 3.75rem; */
-
+  --bg-dark: #1A1A1A;
+  --bg-light: #F3F3F3;
+  --text-dark: #333333;
+  --text-light: #F4F7E0;
 }
 
 

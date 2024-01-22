@@ -18,8 +18,7 @@ export function Hero3dBlock() {
     <div className="center-child-content mt-5 lg:mt-12">
       <div className="common-content-w common-content-p h-96 lg:h-[41rem]">
         
-        <div className="h-full w-full ">
-        {/* bg-[url('/scenes/island/placeholder.jpg')] bg-cover bg-center */}
+        <div className="h-full w-full bg-[url('/scenes/island/placeholder.jpg')] bg-cover bg-center">
           <Suspense fallback={<InteractiveSceneLoader/>}>
             <InteractiveScene/>
           </Suspense>
@@ -34,8 +33,8 @@ function InteractiveScene() {
   // const { scene } = useLoader(GLTFLoader, '/scenes/island/scene.gltf');
   const { scene } = useGLTF('/scenes/island/scene.glb');
 
-  scene.castShadow = true;
-  scene.receiveShadow = true;
+  // REVIEW: An attempt to get rid fo the "Failed to parse URL" error
+  // const { scene } = useGLTF(process.env.NEXT_PUBLIC_URL + '/scenes/island/scene.glb');
 
   scene.traverse((object) => {
     if(object instanceof THREE.Mesh && object.isMesh) {
@@ -61,9 +60,7 @@ function InteractiveScene() {
 
   // NOTE: Increasing the render depth could introduce artifacts. Consider if model should be scaled down instead.
   const camera = new THREE.PerspectiveCamera(40, window.innerWidth/window.innerHeight, 0.1, 5000);
-
   
-
   return (
     <Canvas
       camera = {camera}

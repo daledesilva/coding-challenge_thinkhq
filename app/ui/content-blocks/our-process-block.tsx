@@ -29,7 +29,7 @@ export function OurProcessBlock() {
 
           {/* Main text block */}
           <div className="w-full flex justify-center lg:justify-start">
-            <div className="text-center pt-6 lg:text-right lg:w-6/12 lg:-translate-x-px px-16 bg-[--bg-dark] relative">
+            <div className="lg:w-6/12 pt-6 px-6 sm:px-24 text-center lg:text-right lg:-translate-x-px bg-[--bg-dark] relative">
               <p className={`${flair.className} antialiased text-2xl lg:text-4xl text-[--text-light]`}>
                 We delve deep into understanding who they are, what motivates them, what challenges they face and how complex systems and forces are shaping them.
               </p>
@@ -38,7 +38,7 @@ export function OurProcessBlock() {
 
           {/* Secondary text block */}
           <div className="w-full flex justify-center lg:justify-end lg:pt-16">
-            <div className="text-center pt-8 pb-8 lg:text-left lg:w-6/12 lg:translate-x-px px-16 bg-[--bg-dark] relative">
+            <div className="lg:w-6/12 pt-8 pb-8 px-6 sm:px-24 text-center lg:text-left lg:translate-x-px bg-[--bg-dark] relative">
               <p className="text-base lg:text-xl text-[--text-light]">
                 Our distinctive approach fosters collaboration with people from all walks of life to truly find the real creative answers to some of life’s most challenging and important questions. Anchoring ourselves in the principles of respect, diversity and empathy helps us get there.
               </p>

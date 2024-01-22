@@ -1,12 +1,13 @@
 'use client';
 import { Canvas, useLoader, useThree } from '@react-three/fiber'
-import { CameraControls, Plane, useProgress } from "@react-three/drei";
+import { CameraControls, Plane, useHelper, useProgress } from "@react-three/drei";
 import { GLTFLoader } from 'three/examples/jsm/Addons.js';
 import * as THREE from 'three';
 import { degToRad } from 'three/src/math/MathUtils.js';
 import { Suspense, useEffect, useRef } from 'react';
 import { useGLTF } from '@react-three/drei';
 import { flair } from '../fonts';
+import { DirectionalLightHelper, DirectionalLight } from "three";
 
 ////////
 ////////
@@ -17,7 +18,8 @@ export function Hero3dBlock() {
     <div className="center-child-content mt-5 lg:mt-12">
       <div className="common-content-w common-content-p h-96 lg:h-[41rem]">
         
-        <div className="h-full w-full bg-[url('/scenes/island/placeholder.jpg')] bg-cover bg-center">
+        <div className="h-full w-full ">
+        {/* bg-[url('/scenes/island/placeholder.jpg')] bg-cover bg-center */}
           <Suspense fallback={<InteractiveSceneLoader/>}>
             <InteractiveScene/>
           </Suspense>
@@ -28,7 +30,7 @@ export function Hero3dBlock() {
   )
 }
 
-function InteractiveScene() {
+function InteractiveScene() {  
   // const { scene } = useLoader(GLTFLoader, '/scenes/island/scene.gltf');
   const { scene } = useGLTF('/scenes/island/scene.glb');
 
@@ -43,7 +45,7 @@ function InteractiveScene() {
       if(mesh.name.indexOf('Sky') == -1) {
         // NOTE: Shadows aren't working anyway. It might be a scene size issue, but scaling it down didn't seem to fix
         mesh.castShadow = true;
-        mesh.receiveShadow = true;        
+        mesh.receiveShadow = true;
       }
 
       // Ensure all solid materials refresh their depth order before each render
@@ -60,27 +62,52 @@ function InteractiveScene() {
   // NOTE: Increasing the render depth could introduce artifacts. Consider if model should be scaled down instead.
   const camera = new THREE.PerspectiveCamera(40, window.innerWidth/window.innerHeight, 0.1, 5000);
 
-  return (
-    <Canvas camera={camera} shadows>
-      <CameraSetup />
+  
 
-      <hemisphereLight intensity={3} color="white" position={[0, 5, 0]} />
-      <directionalLight
-        position={[50, 50, 50]}
-        color="white"
-        intensity={2}
-        castShadow
-        // shadow-mapSize-height={1024}
-        // shadow-mapSize-width={1024}
-        // shadow-camera-near={0.5}
-        // shadow-camera-far={1000}
-        visible
-      />
+  return (
+    <Canvas
+      camera = {camera}
+      shadows = {{ type: THREE.VSMShadowMap }}
+    >
+      <CameraSetup />
+      <Lights/>
       <mesh castShadow receiveShadow>
         <primitive object={scene} />
       </mesh>
     </Canvas>
-);
+  );
+}
+
+function Lights() {
+  const dirLightRef = useRef<DirectionalLight>(null!);
+  // useHelper(dirLightRef, DirectionalLightHelper, 50, 'black');
+
+  useEffect( () => {
+    const shadow = dirLightRef.current.shadow;
+    const shadowCamera = shadow.camera;
+    shadowCamera.left = -500;
+    shadowCamera.right = 500;
+    shadowCamera.top = 500;
+    shadowCamera.bottom = -500;
+    shadow.radius = 5;
+    shadow.blurSamples = 25;
+  },[])
+
+  return (<>
+    <hemisphereLight intensity={2} color="white" position={[0, 5, 0]} />
+    <directionalLight
+      ref = {dirLightRef}
+      position={[300,400,200]}
+      color="white"
+      intensity={5}
+      castShadow
+      shadow-mapSize-height={2048}
+      shadow-mapSize-width={2048}
+      shadow-camera-near={0.5}
+      shadow-camera-far={1000}
+      visible
+    />
+  </>)
 }
 
 function InteractiveSceneLoader() {
@@ -111,9 +138,9 @@ function CameraSetup() {
       ref = {cameraRef}
       // Prevent extreme angles
       minPolarAngle = {degToRad(25)}
-      maxPolarAngle = {degToRad(90)}
+      maxPolarAngle = {degToRad(95)}
       // Prevent extreme ddolly in/out
-      minDistance={500}
+      minDistance={200}
       maxDistance={1000}
       // Prevent panning off center
       truckSpeed = {0}
